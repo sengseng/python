@@ -1,0 +1,42 @@
+#coding=utf-8
+import MySQLdb
+
+#-------------------------------------以下为数据库交互的代码-----------------------------------------#
+
+conn=''
+cur=''
+
+def Renew():
+    global  conn
+    conn.commit()
+
+
+def InitSql(host,user,passwd,db,charset):
+    global conn
+    global cur
+    conn = MySQLdb.connect(host=host, user=user,
+                           passwd=passwd, db=db, charset=charset)
+    cur = conn.cursor()
+
+
+#根据Task_id获取单条Input
+def GetInputFromDB():
+    cur.execute("select programname,data_time,programid from program_public_sentiment_index where status=0;")
+    inputs=cur.fetchall()
+    if len(inputs) ==0:
+        return -1
+    input_item = inputs[0]
+    return input_item
+
+#将结果保存到数据库
+def SaveResultToDB(result,ID):
+    cur.execute("update program_public_sentiment_index set baidu_data="+result+" where programid=" + str(ID) + ";")
+    conn.commit()
+
+
+def AlterStatus(sql):
+    global cur,conn
+    cur.execute(sql)
+    conn.commit()
+
+
